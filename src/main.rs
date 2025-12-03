@@ -34,9 +34,11 @@ fn Timer() -> Element {
         to_owned![timer];
 
         async move {
+            while let Some(TimerCommand) = rx.next().await {
+
+            }
 
         }
-
     });
 
     rsx! {
@@ -57,7 +59,7 @@ fn Timer() -> Element {
                     onclick: move |_| {
                         if let PomoTimerState::Working = timer.read().state {
                             tx.send(TimerCommand::Pause);
-                        } 
+                        }
                     },
 
                     if let PomoTimerState::Working = timer.read().state {
