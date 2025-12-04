@@ -30,14 +30,45 @@ fn Timer() -> Element {
     let initial_duration = Duration::from_secs(10);
     let mut timer = use_signal(|| PomoTimer::new(initial_duration));
 
-    let tx = use_coroutine(move |mut rx: UnboundedReceiver<TimerCommand>| {
+    let tx = use_coroutine(move |mut rx: UnboundedReceiver<PomoTimerCommand>| {
         to_owned![timer];
 
         async move {
-            while let Some(TimerCommand) = rx.next().await {
+            while let Some(command) = rx.next().await {
+                match command {
+                    PomoTimerCommand::Start => {
+                        timer.with_mut(|timer| timer.start());
 
+                        loop {
+                            if let Ok(Some(command)) = rx.try_next() {
+                                match command {
+                                    PomoTimerCommand::Pause => {
+
+                                    },
+                                    PomoTimerCommand::Initialize => {
+
+                                    },
+                                    PomoTimerCommand::Resume => {
+                                        
+                                    },
+                                    PomoTimerCommand::Stop => {
+                                        
+                                    },
+                                    PomoTimerCommand::Start => {
+
+                                    },
+
+                                }
+                            }
+                        }
+                    }
+
+                    PomoTimerCommand::Stop => {}
+                    PomoTimerCommand::Pause => {}
+                    PomoTimerCommand::Resume => {}
+                    PomoTimerCommand::Initialize => {}
+                }
             }
-
         }
     });
 
@@ -58,7 +89,9 @@ fn Timer() -> Element {
                     class : "timer__button timer__button--start",
                     onclick: move |_| {
                         if let PomoTimerState::Working = timer.read().state {
-                            tx.send(TimerCommand::Pause);
+                            tx.send(PomoTimerCommand::Pause);
+                        } else {
+                            tx.send(PomoTimerCommand::Start);
                         }
                     },
 
@@ -73,7 +106,7 @@ fn Timer() -> Element {
                     class : "timer__button timer__button--stop",
                     onclick: move |_| {
                         if PomoTimerState::Inactive != timer.read().state {
-                            tx.send(TimerCommand::Stop);
+                            tx.send(PomoTimerCommand::Stop);
                         }
                     },
                     "stopstop😎"
@@ -83,8 +116,10 @@ fn Timer() -> Element {
     }
 }
 
-enum TimerCommand {
+enum PomoTimerCommand {
     Start,
     Stop,
+    Resume,
     Pause,
+    Initialize,
 }
