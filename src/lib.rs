@@ -38,7 +38,7 @@ impl PomoTimer {
         }
     }
 
-    pub fn stop(&mut self) {
+    pub fn pause(&mut self) {
         match self.state {
             PomoTimerState::Working => {
                 let remaining = self.time_left();
@@ -64,7 +64,7 @@ impl PomoTimer {
         }
     }
 
-    pub fn time_left(&self) -> Duration {
+    fn time_left(&self) -> Duration {
         self.deadline
             .checked_duration_since(Instant::now())
             .unwrap_or(Duration::ZERO)
@@ -78,9 +78,12 @@ impl Display for PomoTimer {
             PomoTimerState::Inactive => self.work_duration,
             _ => self.time_left(),
         };
-        let minutes_left = time_left.as_secs_f64().ceil() as u64 / 60;
-        let secs_left = time_left.as_secs_f64().ceil() as u64 % 60;
 
-        write!(f, "{:02}:{:02}", minutes_left, secs_left)
+        let secs = time_left.as_secs_f64().ceil() as u64;
+
+        let minutes_left = secs / 60;
+        let seconds_left = secs % 60;
+
+        write!(f, "{:02}:{:02}", minutes_left, seconds_left)
     }
 }
