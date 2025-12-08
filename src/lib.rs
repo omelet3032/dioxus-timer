@@ -15,6 +15,12 @@ pub enum PomoTimerState {
     Paused(Duration),
 }
 
+pub enum PomoTimerCommand {
+    Start, // 맨 처음 시작시 loop진입전 시작 명령
+    Pause,
+    Reset,
+}
+
 impl PomoTimer {
     pub fn new(work_duration: Duration) -> Self {
         Self {
@@ -39,13 +45,18 @@ impl PomoTimer {
     }
 
     pub fn pause(&mut self) {
-        match self.state {
-            PomoTimerState::Working => {
-                let remaining = self.time_left();
-                self.state = PomoTimerState::Paused(remaining)
-            }
-            _ => (),
+        if let PomoTimerState::Working = self.state {
+            let remaining = self.time_left();
+            self.state = PomoTimerState::Paused(remaining)
         }
+
+        // match self.state {
+        //     PomoTimerState::Working => {
+        //         let remaining = self.time_left();
+        //         self.state = PomoTimerState::Paused(remaining)
+        //     }
+        //     _ => (),
+        // }
     }
 
     pub fn reset(&mut self) {

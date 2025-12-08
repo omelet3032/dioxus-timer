@@ -1,5 +1,5 @@
 use dioxus::prelude::*;
-use dioxus_timer::{PomoTimer, PomoTimerState};
+use dioxus_timer::{PomoTimer, PomoTimerState, PomoTimerCommand};
 
 use futures_util::StreamExt;
 use std::time::{Duration};
@@ -114,17 +114,3 @@ fn Timer() -> Element {
     }
 }
 
-/*
-    stop과 initialize의 기능은 같다
-    - initialize 삭제
-    - start 메서드에 inactive와 paused 분기 처리를 하므로 resume initialize는 필요가 없다.
-
-    1. start로 타이머 첫 시작
-    - 근데 타이머 앱에서 첫 시작이라는 의미가 있나?
-    -
-*/
-enum PomoTimerCommand {
-    Start, // 맨 처음 시작시 loop진입전 시작 명령
-    Pause,
-    Reset,  
-}
