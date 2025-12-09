@@ -19,6 +19,7 @@ fn App() -> Element {
         div {
             class: "app-container",
             Timer{}
+            Settings {  }
         }
     }
 }
@@ -111,6 +112,23 @@ fn Timer() -> Element {
                 }
             }
         }
+        
     }
 }
 
+#[component]
+fn Settings() -> Element {
+    rsx! {
+        div {
+            class : "settings",
+
+            button {
+                class : "settings__button settings__button--open",
+                onclick: move|_| {
+
+                },
+                "settings⚙️"
+            }
+        }
+    }
+}

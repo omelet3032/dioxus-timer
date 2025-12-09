@@ -49,14 +49,6 @@ impl PomoTimer {
             let remaining = self.time_left();
             self.state = PomoTimerState::Paused(remaining)
         }
-
-        // match self.state {
-        //     PomoTimerState::Working => {
-        //         let remaining = self.time_left();
-        //         self.state = PomoTimerState::Paused(remaining)
-        //     }
-        //     _ => (),
-        // }
     }
 
     pub fn reset(&mut self) {
@@ -65,13 +57,10 @@ impl PomoTimer {
     }
 
     pub fn update(&mut self) {
-        match self.state {
-            PomoTimerState::Working => {
-                if self.time_left().is_zero() {
-                    self.state = PomoTimerState::Inactive;
-                }
+        if let PomoTimerState::Working = self.state {
+            if self.time_left().is_zero() {
+                self.state = PomoTimerState::Inactive;
             }
-            _ => {}
         }
     }
 
