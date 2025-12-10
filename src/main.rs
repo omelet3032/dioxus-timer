@@ -26,13 +26,13 @@ fn App() -> Element {
     }
 }
 
-/* 
+/*
     DioxusTimerDisplay -> 앱 디스플레이 총칭
         div start/pause/reset button
             Timer
         div settings button
             Settings
-        
+
 
 */
 
@@ -50,8 +50,7 @@ fn DioxusTimerDisplay() -> Element {
 }
 
 #[component]
-fn Timer(initial_duration:Duration) -> Element {
-    
+fn Timer(initial_duration: Duration) -> Element {
     // let initial_duration = Duration::from_secs(10);
     let timer = use_signal(|| DioxusTimer::new(initial_duration));
 
@@ -65,30 +64,30 @@ fn Timer(initial_duration:Duration) -> Element {
                         timer.with_mut(|timer| timer.start());
 
                         loop {
-                           /*  if let Ok(Some(command)) = rx.try_next() {
-                                match command {
-                                    DioxusTimerCommand::Pause => {
-                                        timer.with_mut(|timer| timer.pause());
-                                        break;
-                                    } // 일시정지
-                                    DioxusTimerCommand::Reset => {
-                                        timer.with_mut(|timer| timer.reset());
-                                        break;
-                                    } // 시간 초기화
-                                    _ => {}
-                                }
-                            } */
-
                             timer.with_mut(|timer| timer.update());
 
                             if timer.read().state == DioxusTimerState::Inactive {
                                 break;
                             }
 
-                            /* 
-                                이 부분에  tokio::select!를 사용한다.
-                             */
+                            /*
+                               이 부분에  tokio::select!를 사용한다.
+                            */
                             tokio::select! {
+                                timer_command = rx.next() => {
+                                    match timer_command {
+                                        Some(DioxusTimerCommand::Pause) => {
+                                             timer.with_mut(|timer| timer.pause());
+                                             break;
+                                        },
+                                        Some(DioxusTimerCommand::Reset) => {
+                                             timer.with_mut(|timer| timer.reset());
+                                             break;
+                                        },
+                                        _ => {}
+                                    }
+                                }
+
                                 _ = tokio::time::sleep(Duration::from_secs(1)) => {},
 
                             }
