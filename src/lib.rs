@@ -2,64 +2,64 @@ use std::fmt::{Display, Formatter};
 use std::time::{Duration, Instant};
 
 #[derive(Copy, Clone, Debug)]
-pub struct PomoTimer {
+pub struct DioxusTimer {
     pub work_duration: Duration,
     pub deadline: Instant,
-    pub state: PomoTimerState,
+    pub state: DioxusTimerState,
 }
 
 #[derive(Copy, Clone, PartialEq, Debug)]
-pub enum PomoTimerState {
+pub enum DioxusTimerState {
     Working,
     Inactive,
     Paused(Duration),
 }
 
-pub enum PomoTimerCommand {
+pub enum DioxusTimerCommand {
     Start, // 맨 처음 시작시 loop진입전 시작 명령
     Pause,
     Reset,
 }
 
-impl PomoTimer {
+impl DioxusTimer {
     pub fn new(work_duration: Duration) -> Self {
         Self {
             work_duration: work_duration,
             deadline: Instant::now(),
-            state: PomoTimerState::Inactive,
+            state: DioxusTimerState::Inactive,
         }
     }
 
     pub fn start(&mut self) {
         match self.state {
-            PomoTimerState::Inactive => {
+            DioxusTimerState::Inactive => {
                 self.deadline = Instant::now() + self.work_duration;
-                self.state = PomoTimerState::Working;
+                self.state = DioxusTimerState::Working;
             }
-            PomoTimerState::Paused(remaining) => {
+            DioxusTimerState::Paused(remaining) => {
                 self.deadline = Instant::now() + remaining;
-                self.state = PomoTimerState::Working;
+                self.state = DioxusTimerState::Working;
             }
             _ => {}
         }
     }
 
     pub fn pause(&mut self) {
-        if let PomoTimerState::Working = self.state {
+        if let DioxusTimerState::Working = self.state {
             let remaining = self.time_left();
-            self.state = PomoTimerState::Paused(remaining)
+            self.state = DioxusTimerState::Paused(remaining)
         }
     }
 
     pub fn reset(&mut self) {
-        self.state = PomoTimerState::Inactive;
+        self.state = DioxusTimerState::Inactive;
         self.deadline = Instant::now() + self.work_duration;
     }
 
     pub fn update(&mut self) {
-        if let PomoTimerState::Working = self.state {
+        if let DioxusTimerState::Working = self.state {
             if self.time_left().is_zero() {
-                self.state = PomoTimerState::Inactive;
+                self.state = DioxusTimerState::Inactive;
             }
         }
     }
@@ -71,11 +71,11 @@ impl PomoTimer {
     }
 }
 
-impl Display for PomoTimer {
+impl Display for DioxusTimer {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         let time_left = match self.state {
-            PomoTimerState::Paused(remaining) => remaining,
-            PomoTimerState::Inactive => self.work_duration,
+            DioxusTimerState::Paused(remaining) => remaining,
+            DioxusTimerState::Inactive => self.work_duration,
             _ => self.time_left(),
         };
 

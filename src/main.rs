@@ -1,9 +1,10 @@
 use dioxus::prelude::*;
-use dioxus_timer::{PomoTimer, PomoTimerState, PomoTimerCommand};
+use dioxus_timer::{DioxusTimer, DioxusTimerCommand, DioxusTimerState};
 
 use futures_util::StreamExt;
-use std::time::{Duration};
-use tokio::time::sleep;
+use std::time::Duration;
+// use tokio::time::sleep;
+// use tokio::select;
 
 const MAIN_CSS: Asset = asset!("/assets/main.css");
 
@@ -18,51 +19,84 @@ fn App() -> Element {
 
         div {
             class: "app-container",
-            Timer{}
-            Settings {  }
+            DioxusTimerDisplay {}
+            // Timer{}
+            // Settings {}
         }
     }
 }
 
-#[component]
-fn Timer() -> Element {
-    let initial_duration = Duration::from_secs(10);
-    let timer = use_signal(|| PomoTimer::new(initial_duration));
+/* 
+    DioxusTimerDisplay -> 앱 디스플레이 총칭
+        div start/pause/reset button
+            Timer
+        div settings button
+            Settings
+        
 
-    let tx = use_coroutine(move |mut rx: UnboundedReceiver<PomoTimerCommand>| {
+*/
+
+#[component]
+fn DioxusTimerDisplay() -> Element {
+    let initial_duration = Duration::from_secs(10);
+    rsx! {
+        div {
+            class: "dioxus-tinmer-display",
+            Timer {initial_duration}
+            Settings {  }
+        }
+
+    }
+}
+
+#[component]
+fn Timer(initial_duration:Duration) -> Element {
+    
+    // let initial_duration = Duration::from_secs(10);
+    let timer = use_signal(|| DioxusTimer::new(initial_duration));
+
+    let tx = use_coroutine(move |mut rx: UnboundedReceiver<DioxusTimerCommand>| {
         to_owned![timer];
 
         async move {
             while let Some(command) = rx.next().await {
                 match command {
-                    PomoTimerCommand::Start => {
+                    DioxusTimerCommand::Start => {
                         timer.with_mut(|timer| timer.start());
 
                         loop {
-                            if let Ok(Some(command)) = rx.try_next() {
+                           /*  if let Ok(Some(command)) = rx.try_next() {
                                 match command {
-                                    PomoTimerCommand::Pause => {
+                                    DioxusTimerCommand::Pause => {
                                         timer.with_mut(|timer| timer.pause());
                                         break;
                                     } // 일시정지
-                                    PomoTimerCommand::Reset => {
+                                    DioxusTimerCommand::Reset => {
                                         timer.with_mut(|timer| timer.reset());
                                         break;
                                     } // 시간 초기화
                                     _ => {}
                                 }
-                            }
+                            } */
 
                             timer.with_mut(|timer| timer.update());
 
-                            if timer.read().state == PomoTimerState::Inactive {
+                            if timer.read().state == DioxusTimerState::Inactive {
                                 break;
                             }
 
-                            sleep(Duration::from_secs(1)).await;
+                            /* 
+                                이 부분에  tokio::select!를 사용한다.
+                             */
+                            tokio::select! {
+                                _ = tokio::time::sleep(Duration::from_secs(1)) => {},
+
+                            }
+
+                            // sleep(Duration::from_secs(1)).await;
                         }
                     }
-                    PomoTimerCommand::Reset => {
+                    DioxusTimerCommand::Reset => {
                         timer.with_mut(|timer| timer.reset());
                     }
                     _ => {}
@@ -87,14 +121,14 @@ fn Timer() -> Element {
                 button {
                     class : "timer__button timer__button--start",
                     onclick: move |_| {
-                        if let PomoTimerState::Working = timer.read().state {
-                            tx.send(PomoTimerCommand::Pause);
+                        if let DioxusTimerState::Working = timer.read().state {
+                            tx.send(DioxusTimerCommand::Pause);
                         } else {
-                            tx.send(PomoTimerCommand::Start);
+                            tx.send(DioxusTimerCommand::Start);
                         }
                     },
 
-                    if let PomoTimerState::Working = timer.read().state {
+                    if let DioxusTimerState::Working = timer.read().state {
                         "pause👀"
                     } else {
                         "start❤️"
@@ -104,18 +138,19 @@ fn Timer() -> Element {
                 button {
                     class : "timer__button timer__button--reset",
                     onclick: move |_| {
-                        if PomoTimerState::Inactive != timer.read().state {
-                            tx.send(PomoTimerCommand::Reset);
+                        if DioxusTimerState::Inactive != timer.read().state {
+                            tx.send(DioxusTimerCommand::Reset);
                         }
                     },
                     "reset😎"
                 }
             }
         }
-        
+
     }
 }
 
+// 설정 버튼뿐만 아니라 설정 화면도 만들어야 한다.
 #[component]
 fn Settings() -> Element {
     rsx! {
