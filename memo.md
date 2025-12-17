@@ -1,14 +1,12 @@
 ### 포모도로 30분
-
-**251210 수 22:00**
-1. tokio select 공부
-2. DioxusTimerDisplay 코드 작성
-
-
-
+**logic**
+1. 사용자가 settings를 누르면 Settings{} 컴포넌트(page)로 넘어가게 하기
+    - 설정 화면 페이지로 넘어가는게 아니라 타이머 옆에 따로 띄우게끔
+2. Settings{}에서 사용자가 시간을 선택할 수 있도록 하기 (60,90,120)
+3. submit를 누르면 타이머 화면으로 복귀(Timer{})하면서 사용자가 선택한 시간으로 설정된다.(initial_duration)
 
 
-**추후 할 일**
+**todo**
 
 1. 타이머 시간을 사용자가 직접 설정할 수 있도록
     - initial_duration 변경
