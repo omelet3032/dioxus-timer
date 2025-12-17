@@ -52,6 +52,8 @@ fn DioxusTimerDisplay() -> Element {
 
 #[component]
 fn TimerUI() -> Element {
+    // 난 TimerUI에 timer use signal과 initial_duration만 전달하면 되는거 아닌가?
+    // fn timer()가 timer와 initial_duration을 반환하면 되는건가?
     let timer = use_signal(|| DioxusTimer::new(Duration::from_secs(10)));
 
     rsx! {
@@ -115,8 +117,7 @@ fn SettingsUI() -> Element {
     }
 }
 
-#[component]
-fn Timer(initial_duration: Duration) -> Element {
+fn timer(initial_duration: Duration) {
     // let initial_duration = Duration::from_secs(10);
     let timer = use_signal(|| DioxusTimer::new(initial_duration));
 
@@ -168,49 +169,6 @@ fn Timer(initial_duration: Duration) -> Element {
         }
     });
 
-    rsx! {
-
-        div {
-            class : "timer",
-
-            div {
-                class : "timer__display",
-                "{timer}"
-            }
-
-            div {
-                class : "timer__controls",
-
-                button {
-                    class : "timer__button timer__button--start",
-                    onclick: move |_| {
-                        if let DioxusTimerState::Working = timer.read().state {
-                            tx.send(DioxusTimerCommand::Pause);
-                        } else {
-                            tx.send(DioxusTimerCommand::Start);
-                        }
-                    },
-
-                    if let DioxusTimerState::Working = timer.read().state {
-                        "pause👀"
-                    } else {
-                        "start❤️"
-                    }
-                }
-
-                button {
-                    class : "timer__button timer__button--reset",
-                    onclick: move |_| {
-                        if DioxusTimerState::Inactive != timer.read().state {
-                            tx.send(DioxusTimerCommand::Reset);
-                        }
-                    },
-                    "reset😎"
-                }
-            }
-        }
-
-    }
 }
 
 // 설정 버튼뿐만 아니라 설정 화면도 만들어야 한다.

@@ -1,6 +1,15 @@
 use std::fmt::{Display, Formatter};
 use std::time::{Duration, Instant};
 
+use dioxus::hooks::Coroutine;
+use dioxus::signals::Signal;
+
+pub struct TimerValue {
+    pub timer_signal: Signal<DioxusTimer>,
+    pub tx: Coroutine<DioxusTimerCommand>
+
+}
+
 #[derive(Copy, Clone, Debug)]
 pub struct DioxusTimer {
     pub work_duration: Duration,
