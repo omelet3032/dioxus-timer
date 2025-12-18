@@ -4,11 +4,13 @@ use std::time::{Duration, Instant};
 use dioxus::hooks::Coroutine;
 use dioxus::signals::Signal;
 
-pub struct TimerValue {
-    pub timer_signal: Signal<DioxusTimer>,
-    pub tx: Coroutine<DioxusTimerCommand>
 
-}
+// 생각해보니 서로 의미없는 두 값을 구조체로 묶는건 이상한 것 같기도
+// pub struct TimerValue {
+//     pub timer_signal: Signal<DioxusTimer>,
+//     pub tx: Coroutine<DioxusTimerCommand>
+
+// }
 
 #[derive(Copy, Clone, Debug)]
 pub struct DioxusTimer {
