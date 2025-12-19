@@ -12,20 +12,21 @@ use dioxus::signals::Signal;
 
 // }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub struct DioxusTimer {
     pub work_duration: Duration,
     pub deadline: Instant,
     pub state: DioxusTimerState,
 }
 
-#[derive(Copy, Clone, PartialEq, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub enum DioxusTimerState {
     Working,
     Inactive,
     Paused(Duration),
 }
 
+#[derive(Copy, Clone, PartialEq, Debug)]
 pub enum DioxusTimerCommand {
     Start, // 맨 처음 시작시 loop진입전 시작 명령
     Pause,

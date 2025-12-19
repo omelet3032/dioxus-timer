@@ -28,11 +28,11 @@ fn App() -> Element {
 #[component]
 fn DioxusTimerDisplay() -> Element {
     let initial_duration = Duration::from_secs(10);
-    let value = timer(initial_duration);
+    let (timer, tx) = timer(initial_duration);
     rsx! {
         div {
             class: "dioxus-timer-display",
-            TimerUI {value}
+            TimerUI {timer, tx}
             SettingsUI {}
         }
 
@@ -40,12 +40,9 @@ fn DioxusTimerDisplay() -> Element {
 }
 
 #[component]
-fn TimerUI(value: TimerValue) -> Element {
+fn TimerUI(timer: Signal<DioxusTimer>, tx: Coroutine<DioxusTimerCommand>) -> Element {
     // 난 TimerUI에 timer use signal과 initial_duration만 전달하면 되는거 아닌가?
     // fn timer()가 timer와 initial_duration을 반환하면 되는건가?
-    // let timer = use_signal(|| DioxusTimer::new(Duration::from_secs(10)));
-    let (timer, tx) = value;
-
     rsx! {
 
         div {
@@ -90,27 +87,7 @@ fn TimerUI(value: TimerValue) -> Element {
     }
 }
 
-#[component]
-fn SettingsUI() -> Element {
-    rsx! {
-        div {
-            class : "settings",
-
-            button {
-                class : "settings__button settings__button--open",
-                onclick: move|_| {
-
-                },
-                "settings⚙️"
-            }
-        }
-    }
-}
-
-type TimerValue = (Signal<DioxusTimer>, Coroutine<DioxusTimerCommand>);
-
-// timer는 signal과 코루틴을 튜플로 반환해야 한다
-fn timer(initial_duration: Duration) -> TimerValue {
+fn timer(initial_duration: Duration) -> (Signal<DioxusTimer>, Coroutine<DioxusTimerCommand>) {
     // let initial_duration = Duration::from_secs(10);
     let timer = use_signal(|| DioxusTimer::new(initial_duration));
 
@@ -164,6 +141,27 @@ fn timer(initial_duration: Duration) -> TimerValue {
 
     (timer,tx)
 }
+
+#[component]
+fn SettingsUI() -> Element {
+    rsx! {
+        div {
+            class : "settings",
+
+            button {
+                class : "settings__button settings__button--open",
+                onclick: move|_| {
+
+                },
+                "settings⚙️"
+            }
+        }
+    }
+}
+
+// type TimerValue = (Signal<DioxusTimer>, Coroutine<DioxusTimerCommand>);
+
+// timer는 signal과 코루틴을 튜플로 반환해야 한다
 
 // 설정 버튼뿐만 아니라 설정 화면도 만들어야 한다.
 // Settings UI
