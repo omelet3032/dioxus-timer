@@ -1,7 +1,7 @@
 use dioxus::prelude::*;
 
 #[component]
-fn Settings() -> Element {
+fn Settings(on_close: EventHandler<MouseEvent>) -> Element {
     /*
         설정 화면을 어떻게 구성할 것인가
         시간 설정외에도 추가적인 부분을 고려해야 한다
@@ -14,14 +14,84 @@ fn Settings() -> Element {
         상태signal를 전달해야 하기 때문에 use_setting을 붙이면 되는건가?
     */
 
-    rsx! {
+    /* 
+        전달할 데이터
+        decrease_time
+        minutes
+        increase_time    
+     */
+   let mut minutes = use_signal(|| 25);
 
+    // 버튼 클릭 시 로직 (나중에 use_settings로 옮길 수 있습니다)
+    let increase_time = move |_| {
+        let current = minutes();
+        if current < 60 {
+            minutes.set(current + 5);
+        } else if current < 120 {
+            minutes.set(current + 10);
+        } else {
+            minutes.set(current + 30);
+        }
+    };
+
+    let decrease_time = move |_| {
+        let current = minutes();
+        if current <= 5 { return; } // 0분 이하 방지
+        
+        if current <= 60 {
+            minutes.set(current - 5);
+        } else if current <= 120 {
+            minutes.set(current - 10);
+        } else {
+            minutes.set(current - 30);
+        }
+    };
+
+    rsx! {
+        div {
+            class: "settings-card",
+            
+            div { 
+                class: "time-setter",
+
+                button {
+                    class: "step-btn",
+                    onclick: decrease_time,
+                    "−"
+                }
+                input {
+                    class: "time-input",
+                    r#type: "number",
+                    value: "{minutes}",
+                    readonly: true, // 버튼으로만 조작하게 설정
+                }
+                span { 
+                    class: "unit", "min" 
+                }
+                
+                button {
+                    class: "step-btn",
+                    onclick: increase_time,
+                    "+"
+                }
+            }
+
+            div {
+                class : "submit-exit",
+
+                button {
+                    class : "submit-btn",
+                }
+            }
+        }
     }
 }
 
-
 #[component]
 pub fn SettingsButton() -> Element {
+
+    let mut is_open = use_signal(|| false);
+
     rsx! {
         div {
             class : "settings",
@@ -29,9 +99,16 @@ pub fn SettingsButton() -> Element {
             button {
                 class : "settings__button settings__button--open",
                 onclick: move|_| {
-
+                 is_open.set(true);
                 },
                 "settings⚙️"
+            }
+        }
+
+        if is_open() {
+            Settings { 
+                // 닫기 기능을 위해 상태를 다시 넘겨줄 수도 있습니다.
+                on_close: move |_| is_open.set(false) 
             }
         }
     }
