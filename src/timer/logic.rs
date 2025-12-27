@@ -1,4 +1,11 @@
-fn use_timer(initial_duration: Duration) -> (Signal<DioxusTimer>, Coroutine<DioxusTimerCommand>) {
+use std::time::Duration;
+
+use dioxus::prelude::*;
+use futures_util::StreamExt;
+
+use crate::timer::data::*;
+
+pub fn use_timer(initial_duration: Duration) -> (Signal<DioxusTimer>, Coroutine<DioxusTimerCommand>) {
     // let initial_duration = Duration::from_secs(10);
     let timer = use_signal(|| DioxusTimer::new(initial_duration));
 

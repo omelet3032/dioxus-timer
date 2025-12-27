@@ -1,13 +1,6 @@
 use std::fmt::{Display, Formatter};
 use std::time::{Duration, Instant};
 
-// 생각해보니 서로 의미없는 두 값을 구조체로 묶는건 이상한 것 같기도
-// pub struct TimerValue {
-//     pub timer_signal: Signal<DioxusTimer>,
-//     pub tx: Coroutine<DioxusTimerCommand>
-
-// }
-
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct DioxusTimer {
     pub work_duration: Duration,

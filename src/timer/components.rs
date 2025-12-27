@@ -1,5 +1,8 @@
+use dioxus::prelude::*;
+use crate::timer::data::*;
+
 #[component]
-fn Timer(timer: Signal<DioxusTimer>, tx: Coroutine<DioxusTimerCommand>) -> Element {
+pub fn Timer(timer: Signal<DioxusTimer>, tx: Coroutine<DioxusTimerCommand>) -> Element {
     // 난 TimerUI에 timer use signal과 initial_duration만 전달하면 되는거 아닌가?
     // fn timer()가 timer와 initial_duration을 반환하면 되는건가?
     rsx! {
