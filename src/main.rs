@@ -24,23 +24,25 @@ fn App() -> Element {
     }
 }
 
-
 #[component]
 fn DioxusTimerDisplay() -> Element {
+    /*
+       initial_duration과 SettingsUI를 연결
+    */
     let initial_duration = Duration::from_secs(10);
-    let (timer, tx) = timer(initial_duration);
+    let (timer, tx) = use_timer(initial_duration);
     rsx! {
         div {
             class: "dioxus-timer-display",
-            TimerUI {timer, tx}
-            SettingsUI {}
+            Timer {timer, tx}
+            SettingsButton {}
         }
 
     }
 }
 
 #[component]
-fn TimerUI(timer: Signal<DioxusTimer>, tx: Coroutine<DioxusTimerCommand>) -> Element {
+fn Timer(timer: Signal<DioxusTimer>, tx: Coroutine<DioxusTimerCommand>) -> Element {
     // 난 TimerUI에 timer use signal과 initial_duration만 전달하면 되는거 아닌가?
     // fn timer()가 timer와 initial_duration을 반환하면 되는건가?
     rsx! {
@@ -87,7 +89,7 @@ fn TimerUI(timer: Signal<DioxusTimer>, tx: Coroutine<DioxusTimerCommand>) -> Ele
     }
 }
 
-fn timer(initial_duration: Duration) -> (Signal<DioxusTimer>, Coroutine<DioxusTimerCommand>) {
+fn use_timer(initial_duration: Duration) -> (Signal<DioxusTimer>, Coroutine<DioxusTimerCommand>) {
     // let initial_duration = Duration::from_secs(10);
     let timer = use_signal(|| DioxusTimer::new(initial_duration));
 
@@ -139,11 +141,35 @@ fn timer(initial_duration: Duration) -> (Signal<DioxusTimer>, Coroutine<DioxusTi
         }
     });
 
-    (timer,tx)
+    (timer, tx)
 }
+/*
+settings 버튼을 누른 후의 화면을 만들자
+*/
 
 #[component]
-fn SettingsUI() -> Element {
+fn Settings() -> Element {
+    /*
+        설정 화면을 어떻게 구성할 것인가
+        시간 설정외에도 추가적인 부분을 고려해야 한다
+        그래도 지금은 시간만 생각하자
+        디자인은?
+        시간 입력
+            5분 단위 업다운 and 60분 이상부터는 10분 단위 업다운 120분부터는 30분단위...
+        그럼 화면 디자인은 단순해진다
+        Settings()는 화면만 실제 로직은 use_setting?
+        상태signal를 전달해야 하기 때문에 use_setting을 붙이면 되는건가?
+    */
+
+    rsx! {
+
+    }
+}
+
+fn use_settings
+
+#[component]
+fn SettingsButton() -> Element {
     rsx! {
         div {
             class : "settings",
