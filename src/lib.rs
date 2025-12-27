@@ -1,28 +1,35 @@
-pub mod timer;
 pub mod settings;
+pub mod timer;
 
 use std::time::Duration;
 
 use dioxus::prelude::*;
 
-use timer::components::Timer;
-use timer::logic::use_timer;
 use settings::components::SettingsButton;
+use timer::components::TimerControls;
+use timer::logic::use_timer;
+
+const DIOXUS_TIMER_CSS: Asset = asset!("/assets/dioxus_timer.css");
 
 #[component]
-pub fn DioxusTimerDisplay() -> Element {
+pub fn DioxusTimer() -> Element {
     /*
        initial_duration과 SettingsUI를 연결
     */
+
     let initial_duration = Duration::from_secs(10);
     let (timer, tx) = use_timer(initial_duration);
+    
     rsx! {
+        
+        document::Stylesheet { href: DIOXUS_TIMER_CSS }
+        
         div {
-            class: "dioxus-timer-display",
-            Timer {timer, tx}
+            class: "dioxus-timer",
+            
+            TimerControls {timer, tx}
             SettingsButton {}
         }
 
     }
 }
-

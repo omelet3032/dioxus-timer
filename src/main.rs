@@ -1,8 +1,6 @@
 use dioxus::prelude::*;
 
-use dioxus_timer::DioxusTimerDisplay;
-
-const MAIN_CSS: Asset = asset!("/assets/main.css");
+use dioxus_timer::DioxusTimer;
 
 fn main() {
     dioxus::launch(App);
@@ -11,12 +9,10 @@ fn main() {
 #[component]
 fn App() -> Element {
     rsx! {
-        document::Stylesheet { href: MAIN_CSS }
 
         div {
             class: "app-container",
-            DioxusTimerDisplay {}
+            DioxusTimer {}
         }
     }
 }
-

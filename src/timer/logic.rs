@@ -5,28 +5,28 @@ use futures_util::StreamExt;
 
 use crate::timer::data::*;
 
-pub fn use_timer(initial_duration: Duration) -> (Signal<DioxusTimer>, Coroutine<DioxusTimerCommand>) {
+pub fn use_timer(initial_duration: Duration) -> (Signal<Timer>, Coroutine<TimerCommand>) {
     // let initial_duration = Duration::from_secs(10);
-    let timer = use_signal(|| DioxusTimer::new(initial_duration));
+    let timer = use_signal(|| Timer::new(initial_duration));
 
-    let tx = use_coroutine(move |mut rx: UnboundedReceiver<DioxusTimerCommand>| {
+    let tx = use_coroutine(move |mut rx: UnboundedReceiver<TimerCommand>| {
         to_owned![timer];
 
         async move {
             while let Some(command) = rx.next().await {
                 match command {
-                    DioxusTimerCommand::Start => {
+                    TimerCommand::Start => {
                         timer.with_mut(|timer| timer.start());
 
                         loop {
                             tokio::select! {
                                 timer_command = rx.next() => {
                                     match timer_command {
-                                        Some(DioxusTimerCommand::Pause) => {
+                                        Some(TimerCommand::Pause) => {
                                             timer.with_mut(|timer| timer.pause());
                                             break;
                                         },
-                                        Some(DioxusTimerCommand::Reset) => {
+                                        Some(TimerCommand::Reset) => {
                                             timer.with_mut(|timer| timer.reset());
                                             break;
                                         },
@@ -37,7 +37,7 @@ pub fn use_timer(initial_duration: Duration) -> (Signal<DioxusTimer>, Coroutine<
                                 _ = tokio::time::sleep(Duration::from_secs(1)) => {
                                         timer.with_mut(|timer| timer.update());
 
-                                        if timer.read().state == DioxusTimerState::Inactive {
+                                        if timer.read().state == TimerState::Inactive {
                                         break;
                                         }
                                 },
@@ -47,7 +47,7 @@ pub fn use_timer(initial_duration: Duration) -> (Signal<DioxusTimer>, Coroutine<
                         }
                     }
 
-                    DioxusTimerCommand::Reset => {
+                    TimerCommand::Reset => {
                         timer.with_mut(|timer| timer.reset());
                     }
 
