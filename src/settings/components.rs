@@ -1,7 +1,21 @@
 use dioxus::prelude::*;
 
+
 #[component]
-fn Settings(on_close: EventHandler<MouseEvent>) -> Element {
+pub fn SettingsControls() -> Element {
+
+    rsx! {
+        /* 
+            SetTimer에서 사용자가 시간을 설정후 submit을 누르면 minutes가 전달된
+            
+         */
+        SettingsButton {}
+    }
+}
+
+
+#[component]
+fn SetTimer(on_close: EventHandler<MouseEvent>) -> Element {
     /*
         설정 화면을 어떻게 구성할 것인가
         시간 설정외에도 추가적인 부분을 고려해야 한다
@@ -81,7 +95,21 @@ fn Settings(on_close: EventHandler<MouseEvent>) -> Element {
 
                 button {
                     class : "submit-btn",
+                    // onclick: minutes,
+                    /* 
+                        사용자가 submit을 누르면
+                        설정된 시간(minutes)이 Timer의 매개변수로 전달된다
+                     */
+                    "submit",
                 }
+
+                button {
+                    class : "exit-btn",
+                    // onclick:
+                    "exit",
+                }
+
+
             }
         }
     }
@@ -106,7 +134,7 @@ pub fn SettingsButton() -> Element {
         }
 
         if is_open() {
-            Settings { 
+            SetTimer { 
                 // 닫기 기능을 위해 상태를 다시 넘겨줄 수도 있습니다.
                 on_close: move |_| is_open.set(false) 
             }
