@@ -98,7 +98,8 @@ fn SetTimer(on_close: EventHandler<MouseEvent>) -> Element {
                     // onclick: minutes,
                     /* 
                         사용자가 submit을 누르면
-                        설정된 시간(minutes)이 Timer의 매개변수로 전달된다
+                        설정된 시간(minutes)가 lib.rs의 pub fn DioxusTimer() -> Element {
+                        initial_duration으로 전달되어야 한다.
                      */
                     "submit",
                 }
